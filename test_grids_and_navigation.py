@@ -17,6 +17,8 @@ import math
 import datetime
 import time
 import sys
+import csv
+import json
 
 # -------------------------
 # Bright Star Catalog (RA in hours, Dec in degrees, Mag, Name)
@@ -330,11 +332,249 @@ def draw_bright_stars(cam_az, cam_alt, focal_px):
             pygame.draw.circle(screen, (230, 230, 255), (x, y), size)
             draw_text(name, (x + size + 3, y - size - 3))
 
+def draw_bright_stars_dict(stars, cam_az, cam_alt, focal_px):
+    lst = local_sidereal_time_radians(OBSERVER_LON_DEG)
+
+    for ra_deg, dec_deg, mag, name in stars:
+        ra = math.radians(ra_deg)
+        dec = math.radians(dec_deg)
+
+        alt, az = radec_to_altaz(ra, dec, lst, observer_lat)
+        if alt < math.radians(-5):  # below horizon slightly -> don't draw
+            continue
+
+        v_world = altaz_to_world_vec(alt, az)
+        v_cam = world_to_camera(v_world, cam_az, cam_alt)
+        p = project_perspective(v_cam, focal_px)
+        if p:
+            x, y = p
+            # star brightness scaling
+            size = max(1, int(6 - mag))  # simple brightness rule
+            pygame.draw.circle(screen, (230, 230, 255), (x, y), size)
+            draw_text(name, (x + size + 3, y - size - 3))
+
+def draw_constellations(constellations, cam_az, cam_alt, focal_px):
+    lst = local_sidereal_time_radians(OBSERVER_LON_DEG)
+
+    for const in constellations:
+        for line in const["lines"]:
+            (ra1_deg, dec1_deg), (ra2_deg, dec2_deg) = line
+            ra1 = math.radians(ra1_deg)
+            dec1 = math.radians(dec1_deg)
+            ra2 = math.radians(ra2_deg)
+            dec2 = math.radians(dec2_deg)
+
+            alt1, az1 = radec_to_altaz(ra1, dec1, lst, observer_lat)
+            alt2, az2 = radec_to_altaz(ra2, dec2, lst, observer_lat)
+
+            v_world1 = altaz_to_world_vec(alt1, az1)
+            v_cam1 = world_to_camera(v_world1, cam_az, cam_alt)
+            p1 = project_perspective(v_cam1, focal_px)
+
+            v_world2 = altaz_to_world_vec(alt2, az2)
+            v_cam2 = world_to_camera(v_world2, cam_az, cam_alt)
+            p2 = project_perspective(v_cam2, focal_px)
+
+            if p1 and p2:
+                pygame.draw.aaline(screen, (200, 200, 255), p1, p2)
+
+def draw_messier_objects(messiers, cam_az, cam_alt, focal_px):
+    lst = local_sidereal_time_radians(OBSERVER_LON_DEG)
+
+    for messier_num, name, ra_deg, dec_deg, magnitude, obj_type, dim_major_deg, dim_minor_deg in messiers:
+        ra = math.radians(ra_deg)
+        dec = math.radians(dec_deg)
+
+        alt, az = radec_to_altaz(ra, dec, lst, observer_lat)
+        if alt < math.radians(-5):  # below horizon slightly -> don't draw
+            continue
+
+        v_world = altaz_to_world_vec(alt, az)
+        v_cam = world_to_camera(v_world, cam_az, cam_alt)
+        p = project_perspective(v_cam, focal_px)
+        if p:
+            x, y = p
+            pygame.draw.circle(screen, (255, 200, 200), (x, y), 4)
+            draw_text(name, (x + 5, y - 5))
+
+def draw_ephemeris_objects(ephem_objects, cam_az, cam_alt, focal_px):
+    lst = local_sidereal_time_radians(OBSERVER_LON_DEG)
+
+    for body_name, ra_deg, dec_deg in ephem_objects:
+        ra = math.radians(ra_deg)
+        dec = math.radians(dec_deg)
+
+        alt, az = radec_to_altaz(ra, dec, lst, observer_lat)
+        if alt < math.radians(-5):  # below horizon slightly -> don't draw
+            continue
+
+        v_world = altaz_to_world_vec(alt, az)
+        v_cam = world_to_camera(v_world, cam_az, cam_alt)
+        p = project_perspective(v_cam, focal_px)
+        if p:
+            x, y = p
+            pygame.draw.circle(screen, (200, 255, 200), (x, y), 5)
+            draw_text(body_name, (x + 6, y - 6))
+
+def load_bright_stars_dict(csv_path="data/hyg_stars_4_0mag.csv"):
+    """
+    Load bright stars from CSV file.
+    
+    Returns:
+        List of tuples (ra_deg, dec_deg, magnitude, name)
+    """
+    stars = []
+    with open(csv_path, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            ra = float(row['RA_deg'])
+            dec = float(row['Dec_deg'])
+            mag = float(row['Magnitude'])
+            name = row['Name'].strip() if row['Name'] else None
+            stars.append((ra, dec, mag, name))
+    return stars
+
+def load_constellations(json_path="data/constellations.json"):
+    """
+    Load constellation data from JSON file.
+    
+    Returns:
+        List of constellation dictionaries with name and lines
+    """
+    with open(json_path, 'r') as file:
+        constellations = json.load(file)
+    return constellations
+
+def load_ephemeris(json_path='data/ephemeris_2025_2030.json'):
+    """
+    Load the precomputed ephemeris JSON file.
+    
+    Returns:
+        dict: contains 'start_date', 'step_days', and body coordinates.
+    """
+    with open(json_path, "r") as f:
+        data = json.load(f)
+    
+    # Convert start_date to datetime
+    data["start_date"] = datetime.datetime.strptime(data["start_date"], "%Y-%m-%d")
+    return data
+
+def load_ephemeris_bodies(data):
+    """
+    Load the list of ephemeris bodies from a json formatted data object.
+
+    Returns:
+        List of body names (str) present in the ephemeris
+    """
+ 
+    # Bodies are all keys except 'start_date' and 'step_days'
+    bodies = [key for key in data.keys() if key not in ("start_date", "step_days")]
+    return bodies
+
+def load_ephemeris_objects(json_path="data/ephemeris_2025_2030.json"):
+    """
+    Returns properly positioned ephemeris objects after loading JSON file
+    and computing their RA/Dec for the current date.
+
+    Returns:
+        List of tuples (body_name, ra_deg, dec_deg)
+    """
+    ephem_data = load_ephemeris(json_path)
+    bodies = load_ephemeris_bodies(ephem_data)
+    now_utc = datetime.datetime.utcnow()
+    ephem_objects = []
+    for body in bodies:
+        ra, dec = get_body_ra_dec(ephem_data, body, now_utc)
+        ephem_objects.append((body, ra, dec))
+    return ephem_objects
+
+def load_messier_objects(json_path="data/messier.json"):
+    """
+    Load Messier objects from JSON file.
+    
+    Returns:
+        List of tuples (messier_num, name, ra_deg, dec_deg, magnitude, type, dim_major_deg, dim_minor_deg)
+    """
+    # Type mapping from JSON abbreviations to full type names
+    type_mapping = {
+        "gc": "Globular Cluster",
+        "oc": "Open Cluster", 
+        "snr": "Supernova Remnant",
+        "sfr": "Nebula",
+        "pn": "Planetary Nebula",
+        "s": "Spiral Galaxy",
+        "e": "Elliptical Galaxy",
+        "i": "Irregular Galaxy",
+        "rn": "Reflection Nebula",
+        "pos": "Asterism"
+    }
+    
+    messiers = []
+    with open(json_path, 'r') as file:
+        data = json.load(file)
+        for obj in data:
+            m_num = obj['id']
+            name = obj.get('name', '')  # Can be null in JSON
+            ra = float(obj['ra'])
+            dec = float(obj['dec'])
+            mag = float(obj['mag'])
+            obj_type = type_mapping.get(obj['type'], obj['type'])  # Map abbreviation to full name
+            dim_major = obj.get('dim_major_deg')  # Can be null
+            dim_minor = obj.get('dim_minor_deg')  # Can be null
+            messiers.append((m_num, name, ra, dec, mag, obj_type, dim_major, dim_minor))
+    return messiers
+
+# --- Helper function for computing ephemeris body position---
+def get_body_ra_dec(ephem_data, body_name, utc_datetime):
+    """
+    Get RA/Dec of a given body at a specific UTC datetime using linear interpolation.
+
+    Args:
+        ephem_data (dict): loaded ephemeris data from load_ephemeris().
+        body_name (str): name of the body ('moon', 'mars', etc.).
+        utc_datetime (datetime): UTC datetime.
+
+    Returns:
+        tuple: (ra_deg, dec_deg)
+    """
+    if body_name not in ephem_data:
+        raise ValueError(f"Body '{body_name}' not found in ephemeris.")
+    
+    start = ephem_data["start_date"]
+    step = ephem_data["step_days"][body_name]
+    coords = ephem_data[body_name]
+
+    delta_days = (utc_datetime - start).total_seconds() / 86400.0
+    if delta_days < 0 or delta_days > (len(coords)-1)*step:
+        raise ValueError("UTC datetime out of ephemeris range.")
+
+    # Find indices for linear interpolation
+    idx_lower = int(delta_days // step)
+    idx_upper = min(idx_lower + 1, len(coords)-1)
+    fraction = (delta_days - idx_lower*step) / step
+
+    ra_lower, dec_lower = coords[idx_lower]
+    ra_upper, dec_upper = coords[idx_upper]
+
+    # Linear interpolation
+    ra_interp = ra_lower + fraction * (ra_upper - ra_lower)
+    dec_interp = dec_lower + fraction * (dec_upper - dec_lower)
+
+    # Normalize RA to 0-360
+    ra_interp = ra_interp % 360
+
+    return ra_interp, dec_interp
+
 # -------------------------
 # Main loop
 # -------------------------
 def main():
     global cam_az, cam_alt, focal
+
+    bright_stars = load_bright_stars_dict(csv_path="data/hyg_stars_4_0mag.csv")
+    constellations = load_constellations(json_path="data/constellations.json")
+    messiers = load_messier_objects(json_path="data/messier.json")
+    ephemeris_objects = load_ephemeris_objects(json_path="data/ephemeris_2025_2030.json")
 
     running = True
     while running:
@@ -384,8 +624,12 @@ def main():
         draw_altaz_grid(cam_az, cam_alt, focal)
         draw_radec_grid(cam_az, cam_alt, focal)
         draw_cardinals(cam_az, cam_alt, focal)
-        draw_bright_stars(cam_az, cam_alt, focal)
-
+        #draw_bright_stars(cam_az, cam_alt, focal)
+        draw_bright_stars_dict(bright_stars, cam_az, cam_alt, focal)
+        draw_constellations(constellations, cam_az, cam_alt, focal)
+        draw_messier_objects(messiers, cam_az, cam_alt, focal)
+        draw_ephemeris_objects(ephemeris_objects, cam_az, cam_alt, focal)
+        
         # HUD: show some info top-left
         lst_rad = local_sidereal_time_radians(OBSERVER_LON_DEG)
         lst_deg = (lst_rad * 180.0 / math.pi) % 360.0
