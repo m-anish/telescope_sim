@@ -6,6 +6,10 @@ class InputHandler:
     """Handles all user input for the application."""
     def __init__(self):
         self.quit_requested = False
+        # Toggle states for catalog objects
+        self.show_stars = True
+        self.show_constellations = True
+        self.show_messiers = True
 
     def process_input(self, camera, dt):
         """
@@ -21,6 +25,15 @@ class InputHandler:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.quit_requested = True # Or handle mode switching later
+                elif event.key == pygame.K_s:
+                    self.show_stars = not self.show_stars
+                    print(f"Stars: {'ON' if self.show_stars else 'OFF'}")
+                elif event.key == pygame.K_c:
+                    self.show_constellations = not self.show_constellations
+                    print(f"Constellations: {'ON' if self.show_constellations else 'OFF'}")
+                elif event.key == pygame.K_m:
+                    self.show_messiers = not self.show_messiers
+                    print(f"Messier objects: {'ON' if self.show_messiers else 'OFF'}")
 
         keys = pygame.key.get_pressed()
 
@@ -54,3 +67,11 @@ class InputHandler:
     def should_quit(self):
         """Returns True if the user has requested to quit."""
         return self.quit_requested
+
+    def get_toggle_states(self):
+        """Returns the current toggle states for catalog objects."""
+        return {
+            'show_stars': self.show_stars,
+            'show_constellations': self.show_constellations,
+            'show_messiers': self.show_messiers
+        }

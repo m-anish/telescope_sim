@@ -1,0 +1,111 @@
+name,ra_deg,dec_deg,mag,type,common_name
+M1,83.6331,22.0145,8.4,Supernova Remnant,Crab Nebula
+M2,323.3625,-0.8233,6.5,Globular Cluster,
+M3,205.5484,28.3772,6.2,Globular Cluster,
+M4,245.8963,-26.5258,5.9,Globular Cluster,
+M5,229.6392,2.0810,5.6,Globular Cluster,
+M6,265.0792,-32.2167,4.2,Open Cluster,Butterfly Cluster
+M7,268.4625,-34.7933,3.3,Open Cluster,Ptolemy Cluster
+M8,270.9250,-24.3850,6.0,Nebula,Lagoon Nebula
+M9,262.8967,-18.5164,7.7,Globular Cluster,
+M10,254.2879,-4.1003,6.6,Globular Cluster,
+M11,282.7708,-6.2717,5.8,Open Cluster,Wild Duck Cluster
+M12,251.8083,-1.9483,6.6,Globular Cluster,
+M13,250.4236,36.4613,5.8,Globular Cluster,Hercules Cluster
+M14,264.4000,-3.2450,7.6,Globular Cluster,
+M15,322.4938,12.1668,6.2,Globular Cluster,
+M16,274.7000,-13.8067,6.0,Cluster + Nebula,Eagle Nebula
+M17,275.1000,-16.1750,6.0,Cluster + Nebula,Omega Nebula
+M18,274.9633,-17.1042,7.5,Open Cluster,
+M19,255.6579,-26.2670,6.8,Globular Cluster,
+M20,270.6667,-23.0133,6.3,Nebula,Trifid Nebula
+M21,271.1000,-22.5000,6.5,Open Cluster,
+M22,279.0996,-23.9048,5.1,Globular Cluster,
+M23,269.1500,-19.0167,6.9,Open Cluster,
+M24,274.0000,-18.4667,4.6,Star Cloud,Sagittarius Star Cloud
+M25,277.0000,-19.2500,4.6,Open Cluster,
+M26,281.2500,-9.3833,8.0,Open Cluster,
+M27,299.9000,22.7167,7.4,Planetary Nebula,Dumbbell Nebula
+M28,276.1375,-24.8717,6.9,Globular Cluster,
+M29,305.0833,38.5333,6.6,Open Cluster,
+M30,325.0921,-23.1790,7.2,Globular Cluster,
+M31,10.6847,41.2692,3.4,Spiral Galaxy,Andromeda Galaxy
+M32,10.6750,40.8652,8.2,Elliptical Galaxy,
+M33,23.4621,30.6602,5.7,Spiral Galaxy,Triangulum Galaxy
+M34,40.5167,42.7833,5.2,Open Cluster,
+M35,92.2250,24.3333,5.1,Open Cluster,
+M36,84.0833,34.1333,6.0,Open Cluster,
+M37,88.0833,32.5500,5.6,Open Cluster,
+M38,82.1750,35.8500,6.4,Open Cluster,
+M39,322.8667,48.4333,4.6,Open Cluster,
+M40,184.7396,58.0839,8.0,Double Star,
+M41,101.5000,-20.7500,4.5,Open Cluster,
+M42,83.8221,-5.3911,4.0,Nebula,Orion Nebula
+M43,83.8208,-5.2650,9.0,Nebula,De Mairan's Nebula
+M44,130.0250,19.9833,3.7,Open Cluster,Beehive Cluster
+M45,56.7500,24.1167,1.6,Open Cluster,Pleiades
+M46,114.1463,-14.8092,6.1,Open Cluster,
+M47,114.1429,-14.4833,4.4,Open Cluster,
+M48,123.4000,-5.8000,5.5,Open Cluster,
+M49,187.4463,8.0004,8.5,Elliptical Galaxy,
+M50,105.9750,-8.3333,5.9,Open Cluster,
+M51,202.4842,47.2306,8.4,Spiral Galaxy,Whirlpool Galaxy
+M52,351.2000,61.5833,7.3,Open Cluster,
+M53,198.2250,18.1667,7.7,Globular Cluster,
+M54,283.7625,-30.4797,7.6,Globular Cluster,
+M55,294.9996,-30.9647,6.3,Globular Cluster,
+M56,289.1479,30.1836,8.3,Globular Cluster,
+M57,283.3963,33.0284,8.8,Planetary Nebula,Ring Nebula
+M58,189.4300,11.8189,9.7,Spiral Galaxy,
+M59,190.4537,11.6469,9.6,Elliptical Galaxy,
+M60,190.9150,11.5526,8.8,Elliptical Galaxy,
+M61,185.4788,4.4736,9.7,Spiral Galaxy,
+M62,255.3037,-30.1111,6.5,Globular Cluster,
+M63,198.9554,42.0286,8.6,Spiral Galaxy,Sunflower Galaxy
+M64,194.1825,21.6828,8.5,Spiral Galaxy,Black Eye Galaxy
+M65,169.7292,13.0933,9.3,Spiral Galaxy,
+M66,170.0633,12.9914,8.9,Spiral Galaxy,
+M67,132.8250,11.8000,6.9,Open Cluster,
+M68,189.8662,-26.7442,7.8,Globular Cluster,
+M69,277.8467,-32.3472,8.9,Globular Cluster,
+M70,280.8029,-32.2922,8.1,Globular Cluster,
+M71,298.4433,18.7792,8.4,Globular Cluster,
+M72,313.3663,-12.5378,9.4,Globular Cluster,
+M73,314.0583,-12.6333,9.0,Asterism,
+M74,24.1742,15.7836,9.4,Spiral Galaxy,
+M75,301.5192,-21.9222,8.6,Globular Cluster,
+M76,25.7833,51.5667,10.1,Planetary Nebula,Little Dumbbell Nebula
+M77,40.6696,-0.0133,8.9,Spiral Galaxy,
+M78,86.7000,0.0667,8.0,Reflection Nebula,
+M79,81.0458,-24.5242,8.0,Globular Cluster,
+M80,244.2600,-22.9750,7.3,Globular Cluster,
+M81,148.8882,69.0653,6.9,Spiral Galaxy,Bode's Galaxy
+M82,148.9683,69.6797,8.4,Irregular Galaxy,Cigar Galaxy
+M83,204.2533,-29.8650,7.6,Spiral Galaxy,Southern Pinwheel Galaxy
+M84,186.2650,12.8869,9.1,Elliptical Galaxy,
+M85,186.3500,18.1919,9.1,Elliptical Galaxy,
+M86,186.5496,12.9467,8.9,Elliptical Galaxy,
+M87,187.7050,12.3911,8.6,Elliptical Galaxy,
+M88,187.9979,14.4203,9.6,Spiral Galaxy,
+M89,188.9150,12.5569,9.8,Elliptical Galaxy,
+M90,189.2350,13.1628,9.5,Spiral Galaxy,
+M91,188.8592,14.4950,10.2,Barred Spiral Galaxy,
+M92,259.2813,43.1350,6.4,Globular Cluster,
+M93,116.0833,-23.8667,6.2,Open Cluster,
+M94,192.7213,41.1200,8.2,Spiral Galaxy,Croc's Eye Galaxy
+M95,160.9900,11.7031,9.7,Barred Spiral Galaxy,
+M96,161.6908,11.8197,9.2,Spiral Galaxy,
+M97,168.6983,55.0192,9.9,Planetary Nebula,Owls Nebula
+M98,183.4513,14.9006,10.0,Spiral Galaxy,
+M99,184.7071,14.4166,9.9,Spiral Galaxy,Pinwheel Galaxy
+M100,185.7283,15.8217,9.3,Spiral Galaxy,
+M101,210.8021,54.3488,7.9,Spiral Galaxy,Pinwheel Galaxy
+M102,230.5000,55.7500,9.9,Spiral Galaxy,Spindle Galaxy
+M103,23.3500,60.6500,7.4,Open Cluster,
+M104,190.0000,-11.6231,8.3,Spiral Galaxy,Sombrero Galaxy
+M105,161.9567,12.5819,9.3,Elliptical Galaxy,
+M106,184.7396,47.3039,8.4,Spiral Galaxy,
+M107,248.1329,-13.0539,8.9,Globular Cluster,
+M108,167.8767,55.6742,10.0,Spiral Galaxy,
+M109,179.3950,53.3744,9.8,Spiral Galaxy,
+M110,10.0913,41.6853,8.9,Elliptical Galaxy,
