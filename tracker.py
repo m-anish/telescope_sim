@@ -14,24 +14,65 @@ def clamp(x, a, b):
     return max(a, min(b, x))
 
 def rotate_y(v, a):
-    """Rotates a 3D vector v around the Y-axis by angle a (in radians)."""
+    """
+    Rotates a 3D vector around the Y-axis (vertical axis).
+    
+    Args:
+        v: 3D vector as tuple (x, y, z)
+        a: Rotation angle in radians (positive = counterclockwise when looking down Y-axis)
+    
+    Returns:
+        Rotated vector as tuple (x', y, z')
+    
+    The Y-coordinate remains unchanged. The X and Z coordinates are transformed
+    using the standard 2D rotation matrix in the XZ-plane.
+    """
     x, y, z = v
     ca, sa = math.cos(a), math.sin(a)
     return (ca * x + sa * z, y, -sa * x + ca * z)
 
 def rotate_x(v, a):
-    """Rotates a 3D vector v around the X-axis by angle a (in radians)."""
+    """
+    Rotates a 3D vector around the X-axis (horizontal axis).
+    
+    Args:
+        v: 3D vector as tuple (x, y, z)
+        a: Rotation angle in radians (positive = counterclockwise when looking along +X-axis)
+    
+    Returns:
+        Rotated vector as tuple (x, y', z')
+    
+    The X-coordinate remains unchanged. The Y and Z coordinates are transformed
+    using the standard 2D rotation matrix in the YZ-plane.
+    """
     x, y, z = v
     ca, sa = math.cos(a), math.sin(a)
     return (x, ca * y - sa * z, sa * y + ca * z)
 
 def sph_to_vec(alt_deg, az_deg):
-    """Converts spherical coordinates (altitude, azimuth in degrees) to Cartesian vector."""
+    """
+    Converts spherical coordinates to a 3D Cartesian unit vector.
+    
+    Args:
+        alt_deg: Altitude angle in degrees (elevation above horizon)
+                 -90° = straight down, 0° = horizon, +90° = straight up
+        az_deg: Azimuth angle in degrees (compass direction)
+                0° = +X axis, 90° = +Z axis, 180° = -X axis, 270° = -Z axis
+    
+    Returns:
+        Unit vector as tuple (x, y, z) on the surface of a unit sphere
+    
+    Coordinate system:
+        - Y-axis points up (altitude)
+        - X-axis points in the 0° azimuth direction
+        - Z-axis points in the 90° azimuth direction
+        - Forms a right-handed coordinate system
+    """
     alt, az = deg2rad(alt_deg), deg2rad(az_deg)
-    y = math.sin(alt)
-    r = math.cos(alt)
-    x = r * math.cos(az)
-    z = r * math.sin(az)
+    y = math.sin(alt)  # Vertical component (up/down)
+    r = math.cos(alt)  # Radius in the horizontal XZ-plane
+    x = r * math.cos(az)  # X component (0° azimuth direction)
+    z = r * math.sin(az)  # Z component (90° azimuth direction)
     return (x, y, z)
 
 # --- Projection ---
@@ -50,10 +91,36 @@ class Camera:
         self.focal = (self.h / 2.0) / math.tan(fov_rad / 2.0)
 
     def world_to_camera(self, v):
-        """Transforms a world-space vector to camera-space."""
-        # Apply rotations based on camera orientation
+        """
+        Transforms a world-space vector to camera-space.
+        
+        This applies the inverse of the camera's orientation to world objects,
+        making them appear to move opposite to the camera's rotation.
+        
+        Camera conventions:
+        - Yaw: Rotation around Y-axis (horizontal panning)
+          * Increasing yaw = camera rotates right
+          * World appears to pan right-to-left
+          * Range: 0-360° (0° = looking along +X axis)
+        
+        - Pitch: Rotation around X-axis (vertical tilting)
+          * Increasing pitch = camera tilts up
+          * World appears to pan upward
+          * Range: -90° to +90° (-90° = straight down, +90° = straight up)
+        
+        Args:
+            v: World-space 3D vector as tuple (x, y, z)
+        
+        Returns:
+            Camera-space 3D vector as tuple (x', y', z')
+        """
+        # Apply yaw rotation with negative angle to create inverse camera rotation
+        # This makes increasing yaw (camera rotating right) cause world to pan right-to-left
         vyaw = rotate_y(v, -deg2rad(self.yaw))
-        vcam = rotate_x(vyaw, -deg2rad(self.pitch))
+        
+        # Apply pitch rotation with positive angle
+        # This makes increasing pitch (camera tilting up) cause world to pan upward
+        vcam = rotate_x(vyaw, deg2rad(self.pitch)) 
         return vcam
 
     def project(self, v):

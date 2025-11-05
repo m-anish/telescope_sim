@@ -26,11 +26,11 @@ class InputHandler:
 
         # Direct rotation
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            camera.yaw += config.YAW_SPEED_DEG * dt
+            camera.yaw -= config.YAW_SPEED_DEG * dt # Decrease yaw for left movement (left-to-right pan)
             # Normalize yaw to be within [0, 360) degrees
             camera.yaw = (camera.yaw % 360 + 360) % 360
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            camera.yaw -= config.YAW_SPEED_DEG * dt
+            camera.yaw += config.YAW_SPEED_DEG * dt # Increase yaw for right movement (right-to-left pan)
             # Normalize yaw to be within [0, 360) degrees
             camera.yaw = (camera.yaw % 360 + 360) % 360
         if keys[pygame.K_UP] or keys[pygame.K_w]:
