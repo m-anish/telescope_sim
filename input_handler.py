@@ -25,7 +25,7 @@ class InputHandler:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.quit_requested = True # Or handle mode switching later
-                elif event.key == pygame.K_s:
+                elif event.key == pygame.K_z:
                     self.show_stars = not self.show_stars
                     print(f"Stars: {'ON' if self.show_stars else 'OFF'}")
                 elif event.key == pygame.K_c:

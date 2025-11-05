@@ -69,7 +69,7 @@ def load_messier_objects(json_path="data/messier.json"):
     Load Messier objects from JSON file.
     
     Returns:
-        List of tuples (messier_num, name, ra_deg, dec_deg, magnitude, type)
+        List of tuples (messier_num, name, ra_deg, dec_deg, magnitude, type, dim_major_deg, dim_minor_deg)
     """
     # Type mapping from JSON abbreviations to full type names
     type_mapping = {
@@ -95,7 +95,9 @@ def load_messier_objects(json_path="data/messier.json"):
             dec = float(obj['dec'])
             mag = float(obj['mag'])
             obj_type = type_mapping.get(obj['type'], obj['type'])  # Map abbreviation to full name
-            messiers.append((m_num, name, ra, dec, mag, obj_type))
+            dim_major = obj.get('dim_major_deg')  # Can be null
+            dim_minor = obj.get('dim_minor_deg')  # Can be null
+            messiers.append((m_num, name, ra, dec, mag, obj_type, dim_major, dim_minor))
     return messiers
 
 def get_stars_as_cartesian(stars):
@@ -145,13 +147,13 @@ def get_messier_objects_as_cartesian(messiers):
     Convert Messier objects to Cartesian coordinates.
     
     Args:
-        messiers: List of (messier_num, name, ra_deg, dec_deg, magnitude, type)
+        messiers: List of (messier_num, name, ra_deg, dec_deg, magnitude, type, dim_major_deg, dim_minor_deg)
     
     Returns:
-        List of (messier_num, name, x, y, z, magnitude, type) tuples
+        List of (messier_num, name, x, y, z, magnitude, type, dim_major_deg, dim_minor_deg) tuples
     """
     cartesian_messiers = []
-    for m_num, name, ra, dec, mag, obj_type in messiers:
+    for m_num, name, ra, dec, mag, obj_type, dim_major, dim_minor in messiers:
         x, y, z = ra_dec_to_cartesian(ra, dec)
-        cartesian_messiers.append((m_num, name, x, y, z, mag, obj_type))
+        cartesian_messiers.append((m_num, name, x, y, z, mag, obj_type, dim_major, dim_minor))
     return cartesian_messiers

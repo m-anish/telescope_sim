@@ -61,7 +61,7 @@ def main():
     print("\nControls:")
     print("Arrow keys/WASD: Rotate camera")
     print("+/-: Zoom in/out")
-    print("S: Toggle stars")
+    print("Z: Toggle stars")
     print("C: Toggle constellations")
     print("M: Toggle Messier objects")
     print("ESC: Quit")
