@@ -19,6 +19,25 @@ import time
 import sys
 
 # -------------------------
+# Bright Star Catalog (RA in hours, Dec in degrees, Mag, Name)
+# Source: common bright stars
+# -------------------------
+BRIGHT_STARS = [
+    (6.752, -16.716, -1.46, "Sirius"),
+    (14.261, 19.182, 0.03, "Arcturus"),
+    (5.242, -8.201, 0.18, "Rigel"),
+    (5.919, 7.407, 0.50, "Betelgeuse"),
+    (18.615, 38.783, 0.03, "Vega"),
+    (19.846, 8.868, 1.25, "Altair"),
+    (7.655, 5.225, 0.38, "Procyon"),
+    (9.222, -69.717, 0.61, "Canopus"),
+    (5.278, 45.998, 0.08, "Capella"),
+    (2.097, 29.090, 2.06, "Mirfak"),
+    (3.408, 49.861, 1.90, "Algol"),
+    (13.420, -11.161, 0.98, "Spica")
+]
+
+# -------------------------
 # Config / Window
 # -------------------------
 pygame.init()
@@ -290,6 +309,27 @@ def draw_cardinals(cam_az, cam_alt, focal_px):
         if p:
             draw_text(label, (p[0]-6, p[1]-12), CARDINAL_COLOR)
 
+def draw_bright_stars(cam_az, cam_alt, focal_px):
+    lst = local_sidereal_time_radians(OBSERVER_LON_DEG)
+
+    for ra_h, dec_deg, mag, name in BRIGHT_STARS:
+        ra = math.radians(ra_h * 15.0)
+        dec = math.radians(dec_deg)
+
+        alt, az = radec_to_altaz(ra, dec, lst, observer_lat)
+        if alt < math.radians(-5):  # below horizon slightly -> don't draw
+            continue
+
+        v_world = altaz_to_world_vec(alt, az)
+        v_cam = world_to_camera(v_world, cam_az, cam_alt)
+        p = project_perspective(v_cam, focal_px)
+        if p:
+            x, y = p
+            # star brightness scaling
+            size = max(1, int(6 - mag))  # simple brightness rule
+            pygame.draw.circle(screen, (230, 230, 255), (x, y), size)
+            draw_text(name, (x + size + 3, y - size - 3))
+
 # -------------------------
 # Main loop
 # -------------------------
@@ -344,6 +384,7 @@ def main():
         draw_altaz_grid(cam_az, cam_alt, focal)
         draw_radec_grid(cam_az, cam_alt, focal)
         draw_cardinals(cam_az, cam_alt, focal)
+        draw_bright_stars(cam_az, cam_alt, focal)
 
         # HUD: show some info top-left
         lst_rad = local_sidereal_time_radians(OBSERVER_LON_DEG)
