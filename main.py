@@ -1,3 +1,4 @@
+import sys
 import pygame
 import math
 
@@ -9,6 +10,9 @@ import ui
 
 def main():
     """Main function to initialize and run the telescope simulation."""
+    if sys.implementation.name == 'micropython':
+        return  # Running on MicroPython hardware, do nothing
+
     pygame.init()
     screen = pygame.display.set_mode((config.W, config.H))
     pygame.display.set_caption("Telescope Tracker Emulator")
