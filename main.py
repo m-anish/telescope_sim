@@ -49,7 +49,7 @@ def main():
         # Fallback to random stars if catalog loading fails
         import starfield
         num_stars = config.NUM_STARS
-        stars_cartesian = [(x, y, z, 1.0) for x, y, z in starfield.random_sphere_points(num_stars)]
+        stars_cartesian = [(x, y, z, 1.0, None) for x, y, z in starfield.random_sphere_points(num_stars)]
         constellations_cartesian = []
         messiers_cartesian = []
 
@@ -62,8 +62,11 @@ def main():
     print("Arrow keys/WASD: Rotate camera")
     print("+/-: Zoom in/out")
     print("Z: Toggle stars")
+    print("Shift+Z: Toggle star names")
     print("C: Toggle constellations")
+    print("Shift+C: Toggle constellation names")
     print("M: Toggle Messier objects")
+    print("Shift+M: Toggle Messier names")
     print("ESC: Quit")
 
     running = True
@@ -90,19 +93,22 @@ def main():
         # Draw constellation lines first (so they appear behind stars)
         if toggle_states['show_constellations'] and constellations_cartesian:
             sample_draw_utilities.draw_constellations_from_cartesian(
-                screen, constellations_cartesian, camera, color=(100, 100, 255)
+                screen, constellations_cartesian, camera, color=(100, 100, 255),
+                show_names=toggle_states['show_constellation_names'], font=font
             )
         
         # Draw stars
         if toggle_states['show_stars'] and stars_cartesian:
             sample_draw_utilities.draw_stars_from_cartesian(
-                screen, stars_cartesian, camera, color=config.STAR_COLOR
+                screen, stars_cartesian, camera, color=config.STAR_COLOR,
+                show_names=toggle_states['show_star_names'], font=font
             )
         
         # Draw Messier objects
         if toggle_states['show_messiers'] and messiers_cartesian:
             sample_draw_utilities.draw_messiers_from_cartesian(
-                screen, messiers_cartesian, camera, color=(255, 180, 80)
+                screen, messiers_cartesian, camera, color=(255, 180, 80),
+                show_names=toggle_states['show_messier_names'], font=font
             )
 
         # Draw UI elements

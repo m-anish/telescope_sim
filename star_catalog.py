@@ -41,7 +41,7 @@ def load_bright_stars(csv_path="data/hyg_stars_4_0mag.csv"):
     Load bright stars from CSV file.
     
     Returns:
-        List of tuples (ra_deg, dec_deg, magnitude)
+        List of tuples (ra_deg, dec_deg, magnitude, name)
     """
     stars = []
     with open(csv_path, 'r') as file:
@@ -50,7 +50,8 @@ def load_bright_stars(csv_path="data/hyg_stars_4_0mag.csv"):
             ra = float(row['RA_deg'])
             dec = float(row['Dec_deg'])
             mag = float(row['Magnitude'])
-            stars.append((ra, dec, mag))
+            name = row['Name'].strip() if row['Name'] else None
+            stars.append((ra, dec, mag, name))
     return stars
 
 def load_constellations(json_path="data/constellations.json"):
@@ -105,15 +106,15 @@ def get_stars_as_cartesian(stars):
     Convert star list to Cartesian coordinates.
     
     Args:
-        stars: List of (ra_deg, dec_deg, magnitude)
+        stars: List of (ra_deg, dec_deg, magnitude, name)
     
     Returns:
-        List of (x, y, z, magnitude) tuples
+        List of (x, y, z, magnitude, name) tuples
     """
     cartesian_stars = []
-    for ra, dec, mag in stars:
+    for ra, dec, mag, name in stars:
         x, y, z = ra_dec_to_cartesian(ra, dec)
-        cartesian_stars.append((x, y, z, mag))
+        cartesian_stars.append((x, y, z, mag, name))
     return cartesian_stars
 
 def get_constellation_lines_as_cartesian(constellations):
@@ -135,10 +136,15 @@ def get_constellation_lines_as_cartesian(constellations):
             x2, y2, z2 = ra_dec_to_cartesian(ra2, dec2)
             cartesian_lines.append([(x1, y1, z1), (x2, y2, z2)])
         
-        cartesian_constellations.append({
+        # Preserve the label field if it exists
+        constellation_data = {
             "name": const["name"],
             "lines": cartesian_lines
-        })
+        }
+        if "label" in const:
+            constellation_data["label"] = const["label"]
+        
+        cartesian_constellations.append(constellation_data)
     
     return cartesian_constellations
 

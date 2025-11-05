@@ -41,17 +41,19 @@ def project_point(point, fov_deg, width, height):
     
     return (int(sx), int(sy))
 
-def draw_stars_from_cartesian(screen, stars, camera, color=(255,255,255)):
+def draw_stars_from_cartesian(screen, stars, camera, color=(255,255,255), show_names=False, font=None):
     """
     Draw stars from Cartesian coordinates using the camera system.
     
     Args:
         screen: Pygame screen surface
-        stars: List of (x, y, z, magnitude) tuples
+        stars: List of (x, y, z, magnitude, name) tuples
         camera: Camera object from tracker.py
         color: Base color for stars (brightness will be adjusted by magnitude)
+        show_names: Boolean to toggle name display
+        font: Pygame font object for text rendering
     """
-    for x, y, z, mag in stars:
+    for x, y, z, mag, name in stars:
         # Transform to camera space
         vc = camera.world_to_camera((x, y, z))
         
@@ -70,8 +72,18 @@ def draw_stars_from_cartesian(screen, stars, camera, color=(255,255,255)):
         # Draw the star
         star_color = (brightness, brightness, brightness)
         pygame.draw.circle(screen, star_color, (int(sx), int(sy)), size)
+        
+        # Draw name if enabled and conditions are met
+        if show_names and mag < 2.0 and name and name.strip() and font:
+            text_color = (200, 200, 200)  # Light gray for text
+            text_surface = font.render(name, True, text_color)
+            text_rect = text_surface.get_rect()
+            # Position text to the right and slightly above the star
+            text_rect.left = int(sx) + size + 3
+            text_rect.centery = int(sy) - 2
+            screen.blit(text_surface, text_rect)
 
-def draw_constellations_from_cartesian(screen, constellations, camera, color=(100,100,255)):
+def draw_constellations_from_cartesian(screen, constellations, camera, color=(100,100,255), show_names=False, font=None):
     """
     Draw constellation lines from Cartesian coordinates using the camera system.
     
@@ -80,8 +92,11 @@ def draw_constellations_from_cartesian(screen, constellations, camera, color=(10
         constellations: List of constellation dictionaries with Cartesian lines
         camera: Camera object from tracker.py
         color: Color for constellation lines
+        show_names: Boolean to toggle name display
+        font: Pygame font object for text rendering
     """
     for const in constellations:
+        # Draw constellation lines
         for line in const["lines"]:
             if len(line) != 2:
                 continue
@@ -100,8 +115,28 @@ def draw_constellations_from_cartesian(screen, constellations, camera, color=(10
                 pygame.draw.line(screen, color, 
                                (int(p1[0]), int(p1[1])), 
                                (int(p2[0]), int(p2[1])), 1)
+        
+        # Draw constellation name if enabled and label exists
+        if show_names and "label" in const and font:
+            label_ra, label_dec = const["label"]
+            
+            # Convert label coordinates to Cartesian
+            label_x, label_y, label_z = star_catalog.ra_dec_to_cartesian(label_ra, label_dec)
+            
+            # Transform to camera space and project to screen
+            label_vc = camera.world_to_camera((label_x, label_y, label_z))
+            label_p = camera.project(label_vc)
+            
+            if label_p:
+                # Draw constellation name
+                text_color = (150, 150, 255)  # Light blue for constellation names
+                text_surface = font.render(const["name"], True, text_color)
+                text_rect = text_surface.get_rect()
+                # Position text centered at label position
+                text_rect.center = (int(label_p[0]), int(label_p[1]))
+                screen.blit(text_surface, text_rect)
 
-def draw_messiers_from_cartesian(screen, messiers, camera, color=(255,180,80)):
+def draw_messiers_from_cartesian(screen, messiers, camera, color=(255,180,80), show_names=False, font=None):
     """
     Draw Messier objects from Cartesian coordinates using the camera system.
     
@@ -110,6 +145,8 @@ def draw_messiers_from_cartesian(screen, messiers, camera, color=(255,180,80)):
         messiers: List of (m_num, name, x, y, z, magnitude, type, dim_major_deg, dim_minor_deg) tuples
         camera: Camera object from tracker.py
         color: Base color for Messier objects
+        show_names: Boolean to toggle name display
+        font: Pygame font object for text rendering
     """
     for m_num, name, x, y, z, mag, obj_type, dim_major, dim_minor in messiers:
         # Transform to camera space
@@ -159,11 +196,32 @@ def draw_messiers_from_cartesian(screen, messiers, camera, color=(255,180,80)):
                 )
                 pygame.draw.ellipse(screen, color, ellipse_rect)
                 pygame.draw.ellipse(screen, (255,255,0), ellipse_rect, 1)
+                
+                # Draw name if enabled and conditions are met
+                if show_names and mag < 5.0 and name and name.strip() and font:
+                    text_color = (255, 200, 150)  # Light orange for messier text
+                    text_surface = font.render(name, True, text_color)
+                    text_rect = text_surface.get_rect()
+                    # Position text below the ellipse
+                    text_rect.centerx = int(sx)
+                    text_rect.top = int(sy) + screen_minor//2 + 3
+                    screen.blit(text_surface, text_rect)
+                
                 continue
         
         # Draw Messier object as a distinctive marker (fallback for small objects or null dimensions)
         pygame.draw.circle(screen, color, (int(sx), int(sy)), 3)
         pygame.draw.circle(screen, (255,255,0), (int(sx), int(sy)), 4, 1)
+        
+        # Draw name if enabled and conditions are met
+        if show_names and mag < 5.0 and name and name.strip() and font:
+            text_color = (255, 200, 150)  # Light orange for messier text
+            text_surface = font.render(name, True, text_color)
+            text_rect = text_surface.get_rect()
+            # Position text below the circle marker
+            text_rect.centerx = int(sx)
+            text_rect.top = int(sy) + 6
+            screen.blit(text_surface, text_rect)
 
 # Legacy functions for backward compatibility
 def draw_stars(screen, stars, yaw, pitch, fov, color=(255,255,255)):

@@ -10,6 +10,10 @@ class InputHandler:
         self.show_stars = True
         self.show_constellations = True
         self.show_messiers = True
+        # Toggle states for name display
+        self.show_star_names = False
+        self.show_messier_names = False
+        self.show_constellation_names = False
 
     def process_input(self, camera, dt):
         """
@@ -26,14 +30,32 @@ class InputHandler:
                 if event.key == pygame.K_ESCAPE:
                     self.quit_requested = True # Or handle mode switching later
                 elif event.key == pygame.K_z:
-                    self.show_stars = not self.show_stars
-                    print(f"Stars: {'ON' if self.show_stars else 'OFF'}")
+                    # Check if shift is pressed for uppercase
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                        self.show_star_names = not self.show_star_names
+                        print(f"Star names: {'ON' if self.show_star_names else 'OFF'}")
+                    else:
+                        self.show_stars = not self.show_stars
+                        print(f"Stars: {'ON' if self.show_stars else 'OFF'}")
                 elif event.key == pygame.K_c:
-                    self.show_constellations = not self.show_constellations
-                    print(f"Constellations: {'ON' if self.show_constellations else 'OFF'}")
+                    # Check if shift is pressed for uppercase
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                        self.show_constellation_names = not self.show_constellation_names
+                        print(f"Constellation names: {'ON' if self.show_constellation_names else 'OFF'}")
+                    else:
+                        self.show_constellations = not self.show_constellations
+                        print(f"Constellations: {'ON' if self.show_constellations else 'OFF'}")
                 elif event.key == pygame.K_m:
-                    self.show_messiers = not self.show_messiers
-                    print(f"Messier objects: {'ON' if self.show_messiers else 'OFF'}")
+                    # Check if shift is pressed for uppercase
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                        self.show_messier_names = not self.show_messier_names
+                        print(f"Messier names: {'ON' if self.show_messier_names else 'OFF'}")
+                    else:
+                        self.show_messiers = not self.show_messiers
+                        print(f"Messier objects: {'ON' if self.show_messiers else 'OFF'}")
 
         keys = pygame.key.get_pressed()
 
@@ -73,5 +95,8 @@ class InputHandler:
         return {
             'show_stars': self.show_stars,
             'show_constellations': self.show_constellations,
-            'show_messiers': self.show_messiers
+            'show_messiers': self.show_messiers,
+            'show_star_names': self.show_star_names,
+            'show_messier_names': self.show_messier_names,
+            'show_constellation_names': self.show_constellation_names
         }
