@@ -136,6 +136,57 @@ def draw_constellations_from_cartesian(screen, constellations, camera, color=(10
                 text_rect.center = (int(label_p[0]), int(label_p[1]))
                 screen.blit(text_surface, text_rect)
 
+def draw_ephemeris_from_cartesian(screen, ephemeris_objects, camera, color=(0,255,128), show_names=False, font=None):
+    """
+    Draw ephemeris objects (planets, moon, etc.) from Cartesian coordinates using the camera system.
+    
+    Args:
+        screen: Pygame screen surface
+        ephemeris_objects: List of (body_name, x, y, z) tuples
+        camera: Camera object from tracker.py
+        color: Base color for ephemeris objects
+        show_names: Boolean to toggle name display
+        font: Pygame font object for text rendering
+    """
+    for body_name, x, y, z in ephemeris_objects:
+        # Transform to camera space
+        vc = camera.world_to_camera((x, y, z))
+        
+        # Project to screen
+        p = camera.project(vc)
+        if not p:
+            continue
+            
+        sx, sy, z_depth = p
+        
+        # Draw ephemeris object as a distinctive diamond shape
+        size = 5  # Fixed size for ephemeris objects
+        
+        # Calculate diamond points
+        points = [
+            (int(sx), int(sy - size)),      # Top
+            (int(sx + size), int(sy)),      # Right
+            (int(sx), int(sy + size)),      # Bottom
+            (int(sx - size), int(sy))       # Left
+        ]
+        
+        # Draw filled diamond
+        pygame.draw.polygon(screen, color, points)
+        # Draw outline for better visibility
+        pygame.draw.polygon(screen, (255,255,255), points, 1)
+        
+        # Draw name if enabled
+        if show_names and font:
+            text_color = (0, 255, 200)  # Cyan for ephemeris text
+            # Capitalize first letter of body name for display
+            display_name = body_name.capitalize() if body_name else body_name
+            text_surface = font.render(display_name, True, text_color)
+            text_rect = text_surface.get_rect()
+            # Position text below the diamond
+            text_rect.centerx = int(sx)
+            text_rect.top = int(sy) + size + 3
+            screen.blit(text_surface, text_rect)
+
 def draw_messiers_from_cartesian(screen, messiers, camera, color=(255,180,80), show_names=False, font=None):
     """
     Draw Messier objects from Cartesian coordinates using the camera system.

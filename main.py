@@ -43,6 +43,11 @@ def main():
         messiers_cartesian = star_catalog.get_messier_objects_as_cartesian(messiers)
         print(f"Loaded {len(messiers_cartesian)} Messier objects")
         
+        # Load ephemeris objects
+        ephemeris_objects = star_catalog.load_ephemeris_objects()
+        ephemeris_cartesian = star_catalog.get_ephemeris_objects_as_cartesian(ephemeris_objects)
+        print(f"Loaded {len(ephemeris_cartesian)} ephemeris objects")
+        
     except Exception as e:
         print(f"Error loading catalog data: {e}")
         print("Falling back to random stars...")
@@ -52,6 +57,7 @@ def main():
         stars_cartesian = [(x, y, z, 1.0, None) for x, y, z in starfield.random_sphere_points(num_stars)]
         constellations_cartesian = []
         messiers_cartesian = []
+        ephemeris_cartesian = []
 
     # Pre-generate gridlines
     longitudes = [tracker.build_longitude_line(lon) for lon in range(0, 360, config.GRID_EVERY_DEG)]
@@ -67,6 +73,8 @@ def main():
     print("Shift+C: Toggle constellation names")
     print("M: Toggle Messier objects")
     print("Shift+M: Toggle Messier names")
+    print("P: Toggle ephemeris objects")
+    print("Shift+P: Toggle ephemeris names")
     print("ESC: Quit")
 
     running = True
@@ -109,6 +117,13 @@ def main():
             sample_draw_utilities.draw_messiers_from_cartesian(
                 screen, messiers_cartesian, camera, color=(255, 180, 80),
                 show_names=toggle_states['show_messier_names'], font=font
+            )
+        
+        # Draw ephemeris objects
+        if toggle_states['show_ephemeris'] and ephemeris_cartesian:
+            sample_draw_utilities.draw_ephemeris_from_cartesian(
+                screen, ephemeris_cartesian, camera, color=(0, 255, 128),
+                show_names=toggle_states['show_ephemeris_names'], font=font
             )
 
         # Draw UI elements

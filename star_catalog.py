@@ -2,6 +2,7 @@ import csv
 import json
 import math
 from typing import List, Tuple, Dict, Any
+from datetime import datetime, timedelta
 
 def deg2rad(d):
     """Converts degrees to radians."""
@@ -36,6 +37,76 @@ def ra_dec_to_cartesian(ra_deg, dec_deg):
     
     return (x, y, z)
 
+
+# --- Load ephemeris JSON ---
+def load_ephemeris(json_path='data/ephemeris_2025_2030.json'):
+    """
+    Load the precomputed ephemeris JSON file.
+    
+    Returns:
+        dict: contains 'start_date', 'step_days', and body coordinates.
+    """
+    with open(json_path, "r") as f:
+        data = json.load(f)
+    
+    # Convert start_date to datetime
+    data["start_date"] = datetime.strptime(data["start_date"], "%Y-%m-%d")
+    return data
+
+def load_ephemeris_bodies(data):
+    """
+    Load the list of ephemeris bodies from a json formatted data object.
+
+    Returns:
+        List of body names (str) present in the ephemeris
+    """
+ 
+    # Bodies are all keys except 'start_date' and 'step_days'
+    bodies = [key for key in data.keys() if key not in ("start_date", "step_days")]
+    return bodies
+
+# --- Helper function for computing ephemeris body position---
+def get_body_ra_dec(ephem_data, body_name, utc_datetime):
+    """
+    Get RA/Dec of a given body at a specific UTC datetime using linear interpolation.
+
+    Args:
+        ephem_data (dict): loaded ephemeris data from load_ephemeris().
+        body_name (str): name of the body ('moon', 'mars', etc.).
+        utc_datetime (datetime): UTC datetime.
+
+    Returns:
+        tuple: (ra_deg, dec_deg)
+    """
+    if body_name not in ephem_data:
+        raise ValueError(f"Body '{body_name}' not found in ephemeris.")
+    
+    start = ephem_data["start_date"]
+    step = ephem_data["step_days"][body_name]
+    coords = ephem_data[body_name]
+
+    delta_days = (utc_datetime - start).total_seconds() / 86400.0
+    if delta_days < 0 or delta_days > (len(coords)-1)*step:
+        raise ValueError("UTC datetime out of ephemeris range.")
+
+    # Find indices for linear interpolation
+    idx_lower = int(delta_days // step)
+    idx_upper = min(idx_lower + 1, len(coords)-1)
+    fraction = (delta_days - idx_lower*step) / step
+
+    ra_lower, dec_lower = coords[idx_lower]
+    ra_upper, dec_upper = coords[idx_upper]
+
+    # Linear interpolation
+    ra_interp = ra_lower + fraction * (ra_upper - ra_lower)
+    dec_interp = dec_lower + fraction * (dec_upper - dec_lower)
+
+    # Normalize RA to 0-360
+    ra_interp = ra_interp % 360
+
+    return ra_interp, dec_interp
+
+
 def load_bright_stars(csv_path="data/hyg_stars_4_0mag.csv"):
     """
     Load bright stars from CSV file.
@@ -64,6 +135,23 @@ def load_constellations(json_path="data/constellations.json"):
     with open(json_path, 'r') as file:
         constellations = json.load(file)
     return constellations
+
+def load_ephemeris_objects(json_path="data/ephemeris_2025_2030.json"):
+    """
+    Returns properly positioned ephemeris objects after loading JSON file
+    and computing their RA/Dec for the current date.
+
+    Returns:
+        List of tuples (body_name, ra_deg, dec_deg)
+    """
+    ephem_data = load_ephemeris(json_path)
+    bodies = load_ephemeris_bodies(ephem_data)
+    now_utc = datetime.utcnow()
+    ephem_objects = []
+    for body in bodies:
+        ra, dec = get_body_ra_dec(ephem_data, body, now_utc)
+        ephem_objects.append((body, ra, dec))
+    return ephem_objects
 
 def load_messier_objects(json_path="data/messier.json"):
     """
@@ -147,6 +235,22 @@ def get_constellation_lines_as_cartesian(constellations):
         cartesian_constellations.append(constellation_data)
     
     return cartesian_constellations
+
+def get_ephemeris_objects_as_cartesian(ephem_objects):
+    """
+    Convert ephemeris objects to Cartesian coordinates.
+    
+    Args:
+        ephem_objects: List of (body_name, ra_deg, dec_deg)
+    
+    Returns:
+        List of (body_name, x, y, z) tuples
+    """
+    cartesian_ephem = []
+    for body_name, ra, dec in ephem_objects:
+        x, y, z = ra_dec_to_cartesian(ra, dec)
+        cartesian_ephem.append((body_name, x, y, z))
+    return cartesian_ephem
 
 def get_messier_objects_as_cartesian(messiers):
     """

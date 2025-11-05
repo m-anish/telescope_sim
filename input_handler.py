@@ -10,10 +10,12 @@ class InputHandler:
         self.show_stars = True
         self.show_constellations = True
         self.show_messiers = True
+        self.show_ephemeris = True
         # Toggle states for name display
         self.show_star_names = False
         self.show_messier_names = False
         self.show_constellation_names = False
+        self.show_ephemeris_names = False
 
     def process_input(self, camera, dt):
         """
@@ -56,6 +58,15 @@ class InputHandler:
                     else:
                         self.show_messiers = not self.show_messiers
                         print(f"Messier objects: {'ON' if self.show_messiers else 'OFF'}")
+                elif event.key == pygame.K_p:
+                    # Check if shift is pressed for uppercase
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                        self.show_ephemeris_names = not self.show_ephemeris_names
+                        print(f"Ephemeris names: {'ON' if self.show_ephemeris_names else 'OFF'}")
+                    else:
+                        self.show_ephemeris = not self.show_ephemeris
+                        print(f"Ephemeris objects: {'ON' if self.show_ephemeris else 'OFF'}")
 
         keys = pygame.key.get_pressed()
 
@@ -96,7 +107,9 @@ class InputHandler:
             'show_stars': self.show_stars,
             'show_constellations': self.show_constellations,
             'show_messiers': self.show_messiers,
+            'show_ephemeris': self.show_ephemeris,
             'show_star_names': self.show_star_names,
             'show_messier_names': self.show_messier_names,
-            'show_constellation_names': self.show_constellation_names
+            'show_constellation_names': self.show_constellation_names,
+            'show_ephemeris_names': self.show_ephemeris_names
         }
