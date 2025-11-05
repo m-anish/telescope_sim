@@ -8,21 +8,22 @@ The telescope simulator now uses real star positions from astronomical catalogs 
 
 ## Data Sources
 
-### Bright Stars (`data/iau_common_names_4_5mag.csv`)
-- Contains 275 bright stars with magnitude ≤ 4.5 from IAU catalog
-- Fields: Name, RA_deg, Dec_deg, Magnitude
-- Source: IAU Common Names for Bright Stars catalog
-- Includes proper star names like Sirius, Vega, Polis, etc.
+### Bright Stars (`data/hyg_stars_4_0mag.csv`)
+- Contains bright stars with magnitude ≤ 4.0 from HYG database
+- Fields: HIP, Name, RA_deg, Dec_deg, Magnitude
+- Source: HYG (Hipparcos-Yale-Gliese) stellar database
+- Includes both numbered stars (HIP catalog) and named stars like Sirius, Vega, etc.
 
 ### Constellations (`data/constellations.json`)
 - Contains 25 major constellations with connecting lines
 - Fields: name, abbrev, lines (array of RA/Dec coordinate pairs)
 - Shows constellation patterns as traditionally drawn
 
-### Messier Objects (`data/messier.csv`)
+### Messier Objects (`data/messier.json`)
 - Contains 110 Messier objects (M1-M110)
-- Fields: name, ra_deg, dec_deg, mag, type, common_name
+- Fields: id, ra, dec, mag, type, name, ngc, dim_major_deg, dim_minor_deg
 - Includes galaxies, nebulae, star clusters, and other deep-sky objects
+- Uses abbreviated type codes (gc= Globular Cluster, oc=Open Cluster, etc.)
 
 ## Implementation
 
@@ -98,9 +99,9 @@ This verifies:
 
 ```
 ├── data/
-│   ├── iau_common_names_4_5mag.csv  # IAU bright star catalog
+│   ├── hyg_stars_4_0mag.csv        # HYG bright star catalog
 │   ├── constellations.json            # Constellation patterns
-│   └── messier.csv                   # Messier objects
+│   └── messier.json                  # Messier objects
 ├── star_catalog.py                   # Catalog loading and conversion
 ├── sample_draw_utilities.py          # Enhanced drawing functions
 ├── input_handler.py                 # Enhanced input with toggles
@@ -115,7 +116,7 @@ This verifies:
 - Stars appear in their actual celestial positions
 - Proper relative brightness based on magnitude
 - Accurate constellation patterns
-- 275 bright stars from IAU catalog
+- 518 bright stars from HYG database (magnitude ≤ 4.0)
 
 ### Interactive Display Control
 - Toggle individual catalog layers on/off
@@ -160,7 +161,7 @@ Potential improvements:
 The application prints loading information:
 ```
 Loading star catalog data...
-Loaded 275 bright stars
+Loaded 518 bright stars
 Loaded 25 constellations
 Loaded 110 Messier objects
 ```

@@ -64,23 +64,37 @@ def load_constellations(json_path="data/constellations.json"):
         constellations = json.load(file)
     return constellations
 
-def load_messier_objects(csv_path="data/messier.csv"):
+def load_messier_objects(json_path="data/messier.json"):
     """
-    Load Messier objects from CSV file.
+    Load Messier objects from JSON file.
     
     Returns:
         List of tuples (messier_num, name, ra_deg, dec_deg, magnitude, type)
     """
+    # Type mapping from JSON abbreviations to full type names
+    type_mapping = {
+        "gc": "Globular Cluster",
+        "oc": "Open Cluster", 
+        "snr": "Supernova Remnant",
+        "sfr": "Nebula",
+        "pn": "Planetary Nebula",
+        "s": "Spiral Galaxy",
+        "e": "Elliptical Galaxy",
+        "i": "Irregular Galaxy",
+        "rn": "Reflection Nebula",
+        "pos": "Asterism"
+    }
+    
     messiers = []
-    with open(csv_path, 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            m_num = row['name']
-            name = row.get('common_name', '')
-            ra = float(row['ra_deg'])
-            dec = float(row['dec_deg'])
-            mag = float(row['mag'])
-            obj_type = row['type']
+    with open(json_path, 'r') as file:
+        data = json.load(file)
+        for obj in data:
+            m_num = obj['id']
+            name = obj.get('name', '')  # Can be null in JSON
+            ra = float(obj['ra'])
+            dec = float(obj['dec'])
+            mag = float(obj['mag'])
+            obj_type = type_mapping.get(obj['type'], obj['type'])  # Map abbreviation to full name
             messiers.append((m_num, name, ra, dec, mag, obj_type))
     return messiers
 
