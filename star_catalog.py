@@ -36,7 +36,7 @@ def ra_dec_to_cartesian(ra_deg, dec_deg):
     
     return (x, y, z)
 
-def load_bright_stars(csv_path="data/bright_stars_mag4p5.csv"):
+def load_bright_stars(csv_path="data/hyg_stars_4_0mag.csv"):
     """
     Load bright stars from CSV file.
     
@@ -121,7 +121,6 @@ def get_constellation_lines_as_cartesian(constellations):
         
         cartesian_constellations.append({
             "name": const["name"],
-            "abbrev": const["abbrev"],
             "lines": cartesian_lines
         })
     
