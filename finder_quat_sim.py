@@ -34,11 +34,11 @@ import csv
 # Config
 # -------------------------
 pygame.init()
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 320, 240
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Finderscope - Quaternion Simulator")
 clock = pygame.time.Clock()
-FONT = pygame.font.SysFont("Arial", 16)
+FONT = pygame.font.SysFont("Arial", 11)
 
 CX, CY = WIDTH // 2, HEIGHT // 2
 focal = 600.0
@@ -304,7 +304,7 @@ def main():
         for line in hud_lines:
             surf = FONT.render(line, True, (200,200,200))
             screen.blit(surf, (6, y))
-            y += 18
+            y += 12
 
         pygame.display.flip()
 
